@@ -46,7 +46,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "<html><body bgcolor='grey'>")
 	}
 
-	fmt.Fprint(w, "<style>.outer { display: table; position: absolute; height: 100%; width: 100%;} .inner { margin-left: auto; margin-right: auto; width: 95%;} </style>")
+	fmt.Fprint(w, "<style>.outer { display: table; position: absolute; height: 100%; width: 100%;} .inner { margin-left: auto; margin-right: auto; width: 95%;} </style> ")
 	fmt.Fprintf(w, "<div class=\"outer\"><div class=\"inner\">")
 
 	if os.Getenv("APP_ENV") != "" {
