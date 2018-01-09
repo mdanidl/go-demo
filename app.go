@@ -53,7 +53,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Fprintf(w, "<h1>Hi there, I'm running on instance: %s in the %s environment</h1>", instanceID, strings.ToUpper(os.Getenv("APP_ENV")))
 	} else {
-		fmt.Fprintf(w, "<h1>Hi there, I'm running on instance: %s in an unknown environment</h1>", instanceID)
+		fmt.Fprintf(w, "<h1>Hi there, I'm running on instance: %s in an unknown environment</h1> ", instanceID)
 	}
 	fmt.Fprintf(w, "<p> %d multiplied by 3 = %d </p>", numberToMultiply, multiplybythree(numberToMultiply))
 	fmt.Fprintf(w, "</div></div></body></html>")
