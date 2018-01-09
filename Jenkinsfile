@@ -1,5 +1,6 @@
 node {
     def root = tool name: 'Default Go', type: 'go'
+    def tool name: 'Default Terraform', type: 'org.jenkinsci.plugins.terraform.TerraformInstallation'
     withEnv(["GOROOT=${root}", "PATH+GO=${root}/bin"]) {
 
         stage('Fetch') { 
@@ -22,19 +23,32 @@ node {
     }
 
     stage('Deploy To DEV') {
+        // create aws instance
+        // ENV: APP_ENV , APP_BGC , APP_VER
+        // when done, do curl externalip and check return code
+        // eg: this is integration test
+        sh '''
+        
+          
+
+        '''
 
     }
 
     stage('Deploy To UAT') {
-
+      // create aws instance
+      // ENV: APP_ENV , APP_BGC , APP_VER
+      // when done, do curl externalip and if 
     }
 
     stage('Deploy approval'){
-        input "Deploy to prod?"
+        input "Deploy to PROD?"
     }
 
     stage('Deploy to PROD') {
-
+      // create aws instance
+      // ENV: APP_ENV , APP_BGC , APP_VER
+      // when done, do curl externalip and if 
     }
 
 
