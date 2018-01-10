@@ -1,5 +1,6 @@
 node {
     def root = tool name: 'Default Go', type: 'go'
+    def version=currentBuild.id
     withEnv(["GOROOT=${root}", "PATH+GO=${root}/bin"]) {
 
         stage('Fetch') { 
@@ -33,7 +34,6 @@ node {
         // ENV: APP_ENV , APP_BGC , APP_VER
         // when done, do curl externalip and check return code
         // eg: this is integration test
-        def version=currentBuild.id
         ansiColor('xterm') {
             withAWS(credentials:'mdaniaws', region: 'eu-west-1') {
                 sh """
@@ -53,12 +53,16 @@ node {
                 curl -s dev.go.mdanidl.ecs.digital:8080 -I | head -n1 | awk '{print $2}'
             '''
         )
-        echo returnCode
+        echo returnCode.trim()
         if (true) {
-            sh """
-                terraform destroy -state=dev.state -force                
-            """
-            error("Didn't get HTTP 200. Failing...")
+            withAWS(credentials:'mdaniaws', region: 'eu-west-1') {
+                sh """
+                    cd tf
+                    terraform init
+                    terraform destroy -var 'aws_region=eu-west-1' -var 'aws_subnet_id=subnet-3166495a' -var 'security_group_ids=["sg-1aee6062","sg-f001cb88"]' -var 'key_name=ForestMain' -var 'version=${version}' -var 'version_colour=grey' -var 'app_env=dev' -state=tf/dev.state -force                
+                """
+                error("Didn't get HTTP 200. Failing...")
+            }
         }
     }
 
