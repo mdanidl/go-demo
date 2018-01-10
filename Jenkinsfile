@@ -1,6 +1,6 @@
 node {
     def root = tool name: 'Default Go', type: 'go'
-    def tool name: 'Default Terraform', type: 'org.jenkinsci.plugins.terraform.TerraformInstallation'
+    def root = tool name: 'Default Terraform', type: 'org.jenkinsci.plugins.terraform.TerraformInstallation'
     withEnv(["GOROOT=${root}", "PATH+GO=${root}/bin"]) {
 
         stage('Fetch') { 
@@ -27,9 +27,13 @@ node {
         // ENV: APP_ENV , APP_BGC , APP_VER
         // when done, do curl externalip and check return code
         // eg: this is integration test
+        def version=currentBuild.id        
         sh '''
         
-          
+          cd tf
+          terraform init
+          terraform get
+          terraform apply -var 'aws_region=eu-west-1' -var 'vpc_subnet_id=subnet-3166495a' -var 'security_group_ids=["sg-1aee6062","sg-f001cb88"]' -var 'key_name=ForestMain' -var 'version=${version}' -var 'version_colour=grey' -var 'app_env=dev'
 
         '''
 
@@ -38,7 +42,7 @@ node {
     stage('Deploy To UAT') {
       // create aws instance
       // ENV: APP_ENV , APP_BGC , APP_VER
-      // when done, do curl externalip and if 
+      // when done, do curl externalip and check if 
     }
 
     stage('Deploy approval'){
