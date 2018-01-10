@@ -1,6 +1,5 @@
 node {
     def root = tool name: 'Default Go', type: 'go'
-    def root = tool name: 'Default Terraform', type: 'org.jenkinsci.plugins.terraform.TerraformInstallation'
     withEnv(["GOROOT=${root}", "PATH+GO=${root}/bin"]) {
 
         stage('Fetch') { 
@@ -23,6 +22,8 @@ node {
     }
 
     stage('Deploy To DEV') {
+        def tfHome = tool name: 'Default Terraform', type: 'org.jenkinsci.plugins.terraform.TerraformInstallation'
+        env.PATH = "${tfHome}:${env.PATH}"
         // create aws instance
         // ENV: APP_ENV , APP_BGC , APP_VER
         // when done, do curl externalip and check return code
@@ -32,6 +33,7 @@ node {
         
           cd tf
           terraform init
+          sleep 20
           terraform get
           terraform apply -var 'aws_region=eu-west-1' -var 'vpc_subnet_id=subnet-3166495a' -var 'security_group_ids=["sg-1aee6062","sg-f001cb88"]' -var 'key_name=ForestMain' -var 'version=${version}' -var 'version_colour=grey' -var 'app_env=dev'
 

@@ -23,13 +23,13 @@ data "template_file" "user_data" {
   }
 }
 
-resource "aws_instance" "docker_mgr" {
+resource "aws_instance" "instance" {
   ami                       = "${data.aws_ami.ubuntu.id}"
-  subnet_id                 = "${var.vpc_subnet_id}"
+  subnet_id                 = "${var.aws_subnet_id}"
   instance_type             = "${var.instance_type}"
   key_name                  = "${var.key_name}"
   vpc_security_group_ids    = "${var.security_group_ids}"
-  user_data                 = "${data.template_file.user_data_mgr.rendered}"
+  user_data                 = "${data.template_file.user_data.rendered}"
   
   tags {
       Name = "TEST_GOAPP_DM"
