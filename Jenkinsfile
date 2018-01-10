@@ -15,7 +15,12 @@ node {
         }
         stage('Copy Artifacts to S3') {
             withAWS(credentials:'mdaniaws', region: 'eu-west-1') {
-                s3Upload(file:'bin/', bucket:'ecsd-mdanidl', path:'go-demo/artifacts/'+currentBuild.id+'/')
+                s3Upload(
+                    file:'bin/', 
+                    bucket:'ecsd-mdanidl', 
+                    path:'go-demo/artifacts/'+currentBuild.id+'/',
+                    acl: 'PublicRead'
+                )
                 archive 'bin/*'
             } 
         }

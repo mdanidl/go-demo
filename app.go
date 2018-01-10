@@ -40,8 +40,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("The path is not a number")
 	}
 
-	if os.Getenv("APP_VERSION") != "" {
-		fmt.Fprintf(w, "<html><body bgcolor=%s>", os.Getenv("APP_VERSION"))
+	if os.Getenv("APP_COLOUR") != "" {
+		fmt.Fprintf(w, "<html><body bgcolor=%s>", os.Getenv("APP_COLOUR"))
 	} else {
 		fmt.Fprintf(w, "<html><body bgcolor='grey'>")
 	}
