@@ -20,6 +20,7 @@ data "template_file" "user_data" {
   vars {
     v_num = "${var.version}"
     v_col = "${var.version_colour}"
+    env   = "${var.app_env}"
   }
 }
 
