@@ -37,3 +37,11 @@ resource "aws_instance" "instance" {
       Owner = "${lower(element(split("/",data.aws_caller_identity.current_user.arn),1))}"
   }
 }
+
+resource "aws_route53_record" "record" {
+  zone_id = "ZJOMVAARB9FWK"
+  name    = "${var.app_env}.go"
+  type    = "A"
+  ttl     = "60"
+  records = ["${aws_instance.instance.public_ip}"]
+}

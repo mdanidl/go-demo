@@ -45,6 +45,22 @@ node {
             }
         }
     }
+    sleep(15)
+    stage('Integration Test on Dev') {
+        def returnCode = sh(
+            returnStdout: true,
+            script: '''
+                curl -s dev.go.mdanidl.ecs.digital:8080 -I | head -n1 | awk '{print $2}'
+            '''
+        )
+        echo returnCode
+        if (true) {
+            sh """
+                terraform destroy -state=dev.state -force                
+            """
+            error("Didn't get HTTP 200. Failing...")
+        }
+    }
 
     stage('Deploy To UAT') {
       // create aws instance
