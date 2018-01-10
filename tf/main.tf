@@ -32,14 +32,14 @@ resource "aws_instance" "instance" {
   user_data                 = "${data.template_file.user_data.rendered}"
   
   tags {
-      Name = "TEST_GOAPP_DM"
+      Name = "TEST_GOAPP_DM-${var.version}-${var.app_env}"
       Owner = "${lower(element(split("/",data.aws_caller_identity.current_user.arn),1))}"
   }
 }
 
 resource "aws_route53_record" "record" {
   zone_id = "ZJOMVAARB9FWK"
-  name    = "${var.app_env}.go"
+  name    = "${var.app_env == "prod" ? "" : join(var.app_env,'.') }go"
   type    = "A"
   ttl     = "60"
   records = ["${aws_instance.instance.public_ip}"]

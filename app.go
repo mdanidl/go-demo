@@ -44,11 +44,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "<style>.outer { display: table; position: absolute; height: 100%; width: 100%;} .inner { margin-left: auto; margin-right: auto; width: 95%;} </style> ")
 	fmt.Fprintf(w, "<div class=\"outer\"><div class=\"inner\">")
 
-	if os.Getenv("APP_ENV") != "" {
+	if os.Getenv("APP_VERSION") != "" {
 
-		fmt.Fprintf(w, "<h1>Hi there, I'm running on instance: %s in the %s environment</h1>", instanceID, strings.ToUpper(os.Getenv("APP_ENV")))
+		fmt.Fprintf(w, "<h1>Hi there, I'm running on instance: %s , Stack version is: %s </h1>", instanceID, strings.ToUpper(os.Getenv("APP_VERSION")))
 	} else {
-		fmt.Fprintf(w, "<h1>Hi there, I'm running on instance: %s in an unknown environment</h1> ", instanceID)
+		fmt.Fprintf(w, "<h1>Hi there, I'm running on instance: %s , Stack version is unknown! </h1> ", instanceID)
 	}
 	fmt.Fprintf(w, "<p> %d multiplied by 3 = %d </p>", numberToMultiply, multiplybythree(numberToMultiply))
 	fmt.Fprintf(w, "</div></div></body></html>")

@@ -54,7 +54,7 @@ node {
             '''
         )
         echo returnCode.trim()
-        if (returnCode.trim() != 200) {
+        if (returnCode != "200") {
             withAWS(credentials:'mdaniaws', region: 'eu-west-1') {
                 sh """
                     cd tf
@@ -62,25 +62,26 @@ node {
                     terraform destroy -var 'aws_region=eu-west-1' -var 'aws_subnet_id=subnet-3166495a' -var 'security_group_ids=["sg-1aee6062","sg-f001cb88"]' -var 'key_name=ForestMain' -var 'version=${version}' -var 'app_env=dev' -state=dev.state -force                
                 """
                 error("Didn't get HTTP 200. Failing...")
-            }
+            }            
         }
     }
 
     stage('Deploy To UAT') {
         def tfHome = tool name: 'Default Terraform', type: 'org.jenkinsci.plugins.terraform.TerraformInstallation'
         env.PATH = "${tfHome}:${env.PATH}"
+        
         ansiColor('xterm') {
             withAWS(credentials:'mdaniaws', region: 'eu-west-1') {
                 sh """
                     cd tf
                     terraform init
                     terraform get
-                    terraform apply -var 'aws_region=eu-west-1' -var 'aws_subnet_id=subnet-3166495a' -var 'security_group_ids=["sg-1aee6062","sg-f001cb88"]' -var 'key_name=ForestMain' -var 'version=${version}' -var 'app_env=uat' -state=uat.state -auto-approve                
+                    terraform apply -var 'aws_region=eu-west-1' -var 'aws_subnet_id=subnet-3166495a' -var 'security_group_ids=["sg-1aee6062","sg-f001cb88"]' -var 'key_name=ForestMain' -var 'version=${version}' -var 'app_env=uat' -state=prod-${version}.state -auto-approve                
                 """
             }
         }
     }
-    
+
     stage('Deploy approval'){
         input "Deploy to PROD?"
     }
