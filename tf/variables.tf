@@ -10,7 +10,6 @@ variable "instance_type" {
     default = "t2.small"
  }
  variable "version" {}
- variable "version_colour" {}
  variable "app_env" {
      default = "dev"
  }

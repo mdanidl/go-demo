@@ -39,12 +39,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("The path is not a number")
 	}
-
-	if os.Getenv("APP_COLOUR") != "" {
-		fmt.Fprintf(w, "<html><body bgcolor=%s>", os.Getenv("APP_COLOUR"))
-	} else {
-		fmt.Fprintf(w, "<html><body bgcolor='grey'>")
-	}
+	fmt.Fprintf(w, "<html><body bgcolor='grey'>")
 
 	fmt.Fprint(w, "<style>.outer { display: table; position: absolute; height: 100%; width: 100%;} .inner { margin-left: auto; margin-right: auto; width: 95%;} </style> ")
 	fmt.Fprintf(w, "<div class=\"outer\"><div class=\"inner\">")
