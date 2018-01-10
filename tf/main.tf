@@ -39,7 +39,7 @@ resource "aws_instance" "instance" {
 
 resource "aws_route53_record" "record" {
   zone_id = "ZJOMVAARB9FWK"
-  name    = "${var.app_env == "prod" ? "" : join(var.app_env,".") }go"
+  name    = "${var.app_env == "prod" ? "" : format("%s%s", var.app_env,".") }go"
   type    = "A"
   ttl     = "60"
   records = ["${aws_instance.instance.public_ip}"]
