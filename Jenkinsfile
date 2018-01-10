@@ -40,7 +40,7 @@ node {
                     cd tf
                     terraform init
                     terraform get
-                    terraform apply -var 'aws_region=eu-west-1' -var 'aws_subnet_id=subnet-3166495a' -var 'security_group_ids=["sg-1aee6062","sg-f001cb88"]' -var 'key_name=ForestMain' -var 'version=${version}' -var 'version_colour=grey' -var 'app_env=dev' -state=dev.state -auto-approve                
+                    terraform apply -var 'aws_region=eu-west-1' -var 'aws_subnet_id=subnet-3166495a' -var 'security_group_ids=["sg-1aee6062","sg-f001cb88"]' -var 'key_name=ForestMain' -var 'version=${version}' -var 'app_env=dev' -state=dev.state -auto-approve                
                 """
             }
         }
@@ -54,12 +54,12 @@ node {
             '''
         )
         echo returnCode.trim()
-        if (true) {
+        if (returnCode.trim() != 200) {
             withAWS(credentials:'mdaniaws', region: 'eu-west-1') {
                 sh """
                     cd tf
                     terraform init
-                    terraform destroy -var 'aws_region=eu-west-1' -var 'aws_subnet_id=subnet-3166495a' -var 'security_group_ids=["sg-1aee6062","sg-f001cb88"]' -var 'key_name=ForestMain' -var 'version=${version}' -var 'version_colour=grey' -var 'app_env=dev' -state=dev.state -force                
+                    terraform destroy -var 'aws_region=eu-west-1' -var 'aws_subnet_id=subnet-3166495a' -var 'security_group_ids=["sg-1aee6062","sg-f001cb88"]' -var 'key_name=ForestMain' -var 'version=${version}' -var 'app_env=dev' -state=dev.state -force                
                 """
                 error("Didn't get HTTP 200. Failing...")
             }
@@ -67,11 +67,20 @@ node {
     }
 
     stage('Deploy To UAT') {
-      // create aws instance
-      // ENV: APP_ENV , APP_BGC , APP_VER
-      // when done, do curl externalip and check if 
+        def tfHome = tool name: 'Default Terraform', type: 'org.jenkinsci.plugins.terraform.TerraformInstallation'
+        env.PATH = "${tfHome}:${env.PATH}"
+        ansiColor('xterm') {
+            withAWS(credentials:'mdaniaws', region: 'eu-west-1') {
+                sh """
+                    cd tf
+                    terraform init
+                    terraform get
+                    terraform apply -var 'aws_region=eu-west-1' -var 'aws_subnet_id=subnet-3166495a' -var 'security_group_ids=["sg-1aee6062","sg-f001cb88"]' -var 'key_name=ForestMain' -var 'version=${version}' -var 'app_env=uat' -state=uat.state -auto-approve                
+                """
+            }
+        }
     }
-
+    
     stage('Deploy approval'){
         input "Deploy to PROD?"
     }
