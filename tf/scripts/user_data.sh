@@ -1,6 +1,7 @@
 #!/bin/bash
 
 sudo apt-get update && apt-get upgrade
+sudo apt-get install awscli -y
 export APP_ENV=${env}
 export VERSION_COLOUR=${v_col}
 sudo echo 'APP_ENV=${env}' >> /etc/environment
