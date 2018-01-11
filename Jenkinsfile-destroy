@@ -11,7 +11,7 @@
             echo inst_obj.instance_id.value
             sh """
                 echo "${inst_obj.instance_id.value} to destroy."
-                aws ec2 terminate-instances --instance-id i-0da4c00bcaf41d08f
+                aws ec2 terminate-instances --instance-id ${inst_obj.instance_id.value}
             """
         }
     }

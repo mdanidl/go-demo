@@ -32,10 +32,6 @@ node {
 
         def tfHome = tool name: 'Default Terraform', type: 'org.jenkinsci.plugins.terraform.TerraformInstallation'
         env.PATH = "${tfHome}:${env.PATH}"
-        // create aws instance
-        // ENV: APP_ENV , APP_BGC , APP_VER
-        // when done, do curl externalip and check return code
-        // eg: this is integration test
         ansiColor('xterm') {
             withAWS(credentials:'mdaniaws', region: 'eu-west-1') {
                 sh """
