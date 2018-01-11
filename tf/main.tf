@@ -37,9 +37,29 @@ resource "aws_instance" "instance" {
   }
 }
 
-resource "aws_route53_record" "record" {
+resource "aws_route53_record" "record-dev" {
+  count   = "${var.app_env == "dev" ? 1 : 0}"
   zone_id = "ZJOMVAARB9FWK"
-  name    = "${var.app_env == "prod" ? "" : format("%s%s", var.app_env,".") }go"
+  name    = "dev.go"
+  type    = "A"
+  ttl     = "60"
+  records = ["${aws_instance.instance.public_ip}"]
+}
+
+resource "aws_route53_record" "record-uat" {
+  count   = "${var.app_env == "uat" ? 1 : 0}"
+  zone_id = "ZJOMVAARB9FWK"
+  name    = "uat.go"
+  type    = "A"
+  ttl     = "60"
+  records = ["${aws_instance.instance.public_ip}"]
+}
+
+
+resource "aws_route53_record" "record-prod" {
+  count   = "${var.app_env == "prod" ? 1 : 0}"
+  zone_id = "ZJOMVAARB9FWK"
+  name    = "go"
   type    = "A"
   ttl     = "60"
   records = ["${aws_instance.instance.public_ip}"]

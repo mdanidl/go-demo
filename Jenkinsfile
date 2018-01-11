@@ -8,7 +8,7 @@ node {
          
         }
         stage('Unit Test') {
-            sh "go test"
+            sh "go test -cover -v"
 
         }
         stage('Build') {
@@ -28,6 +28,8 @@ node {
     }
 
     stage('Deploy To DEV') {
+        def stackEnv = "dev"
+
         def tfHome = tool name: 'Default Terraform', type: 'org.jenkinsci.plugins.terraform.TerraformInstallation'
         env.PATH = "${tfHome}:${env.PATH}"
         // create aws instance
@@ -40,7 +42,7 @@ node {
                     cd tf
                     terraform init
                     terraform get
-                    terraform apply -var 'aws_region=eu-west-1' -var 'aws_subnet_id=subnet-3166495a' -var 'security_group_ids=["sg-1aee6062","sg-f001cb88"]' -var 'key_name=ForestMain' -var 'version=${version}' -var 'app_env=dev' -state=dev.state -auto-approve                
+                    terraform apply -var 'aws_region=eu-west-1' -var 'aws_subnet_id=subnet-3166495a' -var 'security_group_ids=["sg-1aee6062","sg-f001cb88"]' -var 'key_name=ForestMain' -var 'version=${version}' -var 'app_env=${stackEnv}' -state=dev.state -auto-approve                
                 """
             }
         }
@@ -54,7 +56,7 @@ node {
             '''
         )
         echo returnCode.trim()
-        if (returnCode != "200") {
+        if (returnCode.trim() != "200") {
             withAWS(credentials:'mdaniaws', region: 'eu-west-1') {
                 sh """
                     cd tf
@@ -67,6 +69,8 @@ node {
     }
 
     stage('Deploy To UAT') {
+        def stackEnv = "uat"
+
         def tfHome = tool name: 'Default Terraform', type: 'org.jenkinsci.plugins.terraform.TerraformInstallation'
         env.PATH = "${tfHome}:${env.PATH}"
         
@@ -76,7 +80,7 @@ node {
                     cd tf
                     terraform init
                     terraform get
-                    terraform apply -var 'aws_region=eu-west-1' -var 'aws_subnet_id=subnet-3166495a' -var 'security_group_ids=["sg-1aee6062","sg-f001cb88"]' -var 'key_name=ForestMain' -var 'version=${version}' -var 'app_env=uat' -state=prod-${version}.state -auto-approve                
+                    terraform apply -var 'aws_region=eu-west-1' -var 'aws_subnet_id=subnet-3166495a' -var 'security_group_ids=["sg-1aee6062","sg-f001cb88"]' -var 'key_name=ForestMain' -var 'version=${version}' -var 'app_env=${stackEnv}' -state=prod-${version}.state -auto-approve                
                 """
             }
         }
@@ -87,10 +91,20 @@ node {
     }
 
     stage('Deploy to PROD') {
-      // create aws instance
-      // ENV: APP_ENV , APP_BGC , APP_VER
-      // when done, do curl externalip and if 
+        def stackEnv = "prod"
+
+        def tfHome = tool name: 'Default Terraform', type: 'org.jenkinsci.plugins.terraform.TerraformInstallation'
+        env.PATH = "${tfHome}:${env.PATH}"
+        
+        ansiColor('xterm') {
+            withAWS(credentials:'mdaniaws', region: 'eu-west-1') {
+                sh """
+                    cd tf
+                    terraform init
+                    terraform get
+                    terraform apply -var 'aws_region=eu-west-1' -var 'aws_subnet_id=subnet-3166495a' -var 'security_group_ids=["sg-1aee6062","sg-f001cb88"]' -var 'key_name=ForestMain' -var 'version=${version}' -var 'app_env=${stackEnv}' -state=prod-${version}.state -auto-approve                
+                """
+            }
+        }
     }
-
-
 }
