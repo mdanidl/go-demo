@@ -103,8 +103,20 @@ node {
                     terraform init
                     terraform get
                     terraform apply -var 'aws_region=eu-west-1' -var 'aws_subnet_id=subnet-3166495a' -var 'security_group_ids=["sg-1aee6062","sg-f001cb88"]' -var 'key_name=ForestMain' -var 'version=${version}' -var 'app_env=${stackEnv}' -state=prod-${version}.state -auto-approve                
+                
+                    terraform output -state=prod-${version}.state -json > ../instance_id.json
                 """
             }
         }
+        archive 'instance_id.json'
+        buildToExecute = lastSuccessfullBuild(currentBuild.getPreviousBuild()).id;
+        echo 'Kicking off Delayed Stack Destroy for build: '+buildToExecute
+        build job: 'Go-Demo - Destroy Old Instance', parameters: [string(name: 'BuildIDToDestroy', value: buildToExecute)], wait: false
     }
+}
+def lastSuccessfullBuild(build) {
+    while (build.result != 'SUCCESS') {
+        build = build.getPreviousBuild();
+    }
+    return build;
 }

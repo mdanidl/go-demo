@@ -1,0 +1,18 @@
+  node {
+    stage('Sleeping for an hour') {
+       // sleep(3600)
+       sleep(10)
+    }
+    stage('Destroying Old Instance') {
+        copyArtifacts filter: 'instance_id.json', projectName: 'Go-Demo', selector: specific(params.BuildIDToDestroy), target: './'
+        def inst_obj = readJSON file: 'instance_id.json'
+        
+        withAWS(credentials:'mdaniaws', region: 'eu-west-1') {
+            echo inst_obj.instance_id.value
+            sh """
+                echo "${inst_obj.instance_id.value} to destroy."
+            """
+            aws ec2 terminate-instances --instance-id i-0da4c00bcaf41d08f
+        }
+    }
+}
